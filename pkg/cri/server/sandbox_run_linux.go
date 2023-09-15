@@ -112,6 +112,12 @@ func (c *criService) sandboxContainerSpec(id string, config *runtime.PodSandboxC
 		}
 	}
 
+	if securityContext.GetIma() {
+		specOpts = append(specOpts, oci.WithImaNamespace())
+	} else {
+		specOpts = append(specOpts, customopts.WithoutNamespace(runtimespec.ImaNamespace))
+	}
+
 	// It's fine to generate the spec before the sandbox /dev/shm
 	// is actually created.
 	sandboxDevShm := c.getSandboxDevShm(id)

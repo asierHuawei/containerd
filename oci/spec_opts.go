@@ -571,6 +571,25 @@ func WithUserNamespace(uidMap, gidMap []specs.LinuxIDMapping) SpecOpts {
 	}
 }
 
+func WithImaNamespace() SpecOpts {
+	return func(_ context.Context, _ Client, _ *containers.Container, s *Spec) error {
+		var hasImans bool
+		setLinux(s)
+		for _, ns := range s.Linux.Namespaces {
+			if ns.Type == specs.ImaNamespace {
+				hasImans = true
+				break
+			}
+		}
+		if !hasImans {
+			s.Linux.Namespaces = append(s.Linux.Namespaces, specs.LinuxNamespace{
+				Type: specs.ImaNamespace,
+			})
+		}
+		return nil
+	}
+}
+
 // WithCgroup sets the container's cgroup path
 func WithCgroup(path string) SpecOpts {
 	return func(_ context.Context, _ Client, _ *containers.Container, s *Spec) error {

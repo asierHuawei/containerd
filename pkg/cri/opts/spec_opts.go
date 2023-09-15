@@ -333,6 +333,10 @@ func WithPodNamespaces(config *runtime.LinuxContainerSecurityContext, sandboxPid
 		}
 	}
 
+	if config.GetIma() {
+		opts = append(opts, oci.WithImaNamespace())
+	}
+
 	return oci.Compose(opts...)
 }
 
